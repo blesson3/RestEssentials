@@ -3,7 +3,7 @@
 //  RestEssentials
 //
 //  Created by Sean Kosanovich on 6/8/15.
-//  Copyright © 2016 Sean Kosanovich. All rights reserved.
+//  Copyright © 2017 Sean Kosanovich. All rights reserved.
 //
 
 import Foundation
@@ -12,16 +12,10 @@ public typealias JSONValue = Any
 
 /// Represents any valid JSON type: another JSON object, an array, a string, a number, or a boolean.
 public struct JSON : CustomStringConvertible, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral {
-    
-    public typealias Element = JSONValue
-    
-    public typealias Key = String
-    
-    public typealias Value = JSONValue
 
     private static let kJSONNull = JSON(rawValue: Void())
 
-    fileprivate let raw: JSONValue
+    private let raw: JSONValue
 
     public var description: String {
         return (raw as AnyObject).description
@@ -177,20 +171,15 @@ public class JSONArray : CustomStringConvertible, Sequence {
 }
 
 internal extension JSON {
-    internal init?(fromData data: Data) {
-        do {
-            let json = try  JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-            if let jsonObj = json as? [String : JSONValue] {
-                self.init(dict: jsonObj)
-            } else if let jsonArray = json as? [JSONValue] {
-                self.init(array: jsonArray)
-            } else {
-                print("Unknown json data type: \(json)")
-                return nil
-            }
-        } catch {
-            print("An error occurred deserializing data to JSON: \(error)")
-            return nil
+    internal init(fromData data: Data) throws {
+        let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers)
+        if let jsonObj = json as? [String : JSONValue] {
+            self.init(dict: jsonObj)
+        } else if let jsonArray = json as? [JSONValue] {
+            self.init(array: jsonArray)
+        } else {
+            print("Unknown json data type: \(json)")
+            throw NetworkingError.malformedResponse(data)
         }
     }
 
