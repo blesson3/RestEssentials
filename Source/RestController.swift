@@ -129,14 +129,14 @@ public class RestController : NSObject, URLSessionDelegate {
 
         #if os(iOS)
             DispatchQueue.main.async {
-                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+//                UIApplication.shared.isNetworkActivityIndicatorVisible = true
             }
         #endif
 
         session.dataTask(with: request) { (data, response, error) -> Void in
             #if os(iOS)
                 DispatchQueue.main.async {
-                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+//                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
                 }
             #endif
                                          
